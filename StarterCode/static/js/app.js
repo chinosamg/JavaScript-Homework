@@ -1,29 +1,44 @@
-// from data.js
-var tableData = data;
+// Assign the data from `data.js` to a descriptive variable
+var people = data;
 
-// YOUR CODE HERE!
-// Get references to the tbody element, input field and button
-var $tbody = document.querySelector("tbody");
+// Select the submit button
+var submit = d3.select("#submit");
 
-// renderTable renders the tableData to the tbody
-function renderTable() {
-  $tbody.innerHTML = "";
-  for (var i = 0; i < tableData.length; i++) {
-    // Get get the current UFO object and its fields
-    var ufo = tableData[i];
-    var observations = Object.keys(ufo);
-    // Create a new row in the tbody, set the index to be i + startingIndex
-    var $row = $tbody.insertRow(i);
-    for (var j = 0; j < observations.length; j++) {
-      // For every observations in the ufo object, create a new cell at set its inner text to be the current value at the current     ufo'sobservation
-      var observation = observations[j];
-      var $cell = $row.insertCell(j);
-      $cell.innerText = ufo[observation];
-    }
-  }
-}
+submit.on("click", function() {
 
+  // Prevent the page from refreshing
+  d3.event.preventDefault();
 
+  // Select the input element and get the raw HTML node
+  var inputElement = d3.select("#patient-form-input");
 
-// Render the table for the first time on page load
-renderTable();
+  // Get the value property of the input element
+  var inputValue = inputElement.property("value");
+
+  console.log(inputValue);
+  console.log(people);
+
+  var filteredData = people.filter(person => person.bloodType === inputValue);
+
+  console.log(filteredData);
+
+  // BONUS: Calculate summary statistics for the age field of the filtered data
+
+  // First, create an array with just the age values
+  var ages = filteredData.map(person => person.age);
+
+  // Next, use math.js to calculate the mean, median, mode, var, and std of the ages
+  var mean = math.mean(ages);
+  var median = math.median(ages);
+  var mode = math.mode(ages);
+  var variance = math.var(ages);
+  var standardDeviation = math.std(ages);
+
+  // Finally, add the summary stats to the `ul` tag
+  d3.select(".summary")
+    .append("li").text(`Mean: ${mean}`)
+    .append("li").text(`Median: ${median}`)
+    .append("li").text(`Mode: ${mode}`)
+    .append("li").text(`Variance: ${variance}`)
+    .append("li").text(`Standard Deviation: ${standardDeviation}`);
+});
